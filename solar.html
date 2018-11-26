@@ -1,0 +1,195 @@
+#include <ESP8266WiFi.h>
+const char *ssid = "PLDTHOMEDSL";
+const char *password = "psalms19";
+const int relay1 = D8;
+
+
+WiFiServer server(80);
+
+
+void setup(){
+
+ Serial.begin(115200);
+ delay(10);
+
+ 
+
+
+
+
+
+
+ pinMode(relay1, OUTPUT);
+ digitalWrite(relay1, HIGH);
+
+
+
+
+
+
+
+
+
+ 
+  WiFi.begin ( ssid, password );
+  Serial.println ( "" );
+
+
+  // Wait for connection
+  while ( WiFi.status() != WL_CONNECTED ) {
+    delay ( 500 );
+    Serial.print ( "." );
+  }
+
+  Serial.println ( "" );
+  Serial.print ( "Connected to: " );
+  Serial.println ( ssid );
+  Serial.print ( "Use this URL to connect: " );
+  Serial.print("http://");
+  Serial.println ( WiFi.localIP() );
+    Serial.println("Your Gateway is:");
+    Serial.println((WiFi.gatewayIP().toString().c_str()));
+      Serial.println("Your host name is:");
+      Serial.println((WiFi.hostname()));
+    Serial.println("/");
+    Serial.println ( "MDNS responder started" );
+    server.begin();
+  Serial.println ( "HTTP server started" );
+    Serial.println();
+    Serial.println("/");}  
+
+    
+    void loop (){ 
+
+  WiFiClient client = server.available();
+  if (!client){
+    return;}
+     
+    Serial.println("new client");
+    while(!client.available()){
+      delay(1);
+    }
+    String request = client.readStringUntil('\r');
+    Serial.println(request);
+    client.flush();
+
+
+
+
+
+
+
+    
+    if(request.indexOf("/RELAY=ON") >0) {
+      digitalWrite(relay1, LOW);
+    }
+
+    
+      if(request.indexOf("/RELAY=OFF") >0) {
+      digitalWrite(relay1, HIGH);
+      }     
+
+
+
+
+
+
+
+client.println("HTTP/1.1 200 OK");
+client.println("Content-Type: text/html");
+client.println("");
+client.println("<!DOCTYPE html>\n");
+client.println("<html>\n");
+client.println("<head>\n");
+client.println("<style>\n");
+client.println("h1 {\n"
+"background-color: gray;\n"
+"td {\n"
+"}\n");
+client.println("</style>\n");
+client.println("<br>\n");
+client.println("<hr>\n");
+client.println("    <center>\n");
+client.println("<font size=\"+2\">\n");
+client.println("<h1  style=\"color:orange;\" >Community Based Solar Power Commercial Distribution System with Monitoring</h1>   \n");
+client.println("</article>\n");
+client.println("<body background = \"https://www.dailysignal.com/wp-content/uploads/180507_CaliSolar_Hopkiins-1250x650.jpg\">\n");
+client.println("<meta name='apple-mobile-web-app-capable' content='yes' />");
+client.println("<meta name='apple-mobile-web-app-status-bar-style' content='black=translucent' />");
+client.println("<hr>\n");
+client.println("\n");
+client.println("<style>\n");
+client.println("ul {\n"
+"    list-style-type: none;\n"
+"    margin: 0;\n"
+"    padding: 0;\n"
+"    overflow: hidden;\n"
+"    background-color: #333;\n"
+"}\n");
+client.println("\n");
+client.println("li {\n"
+"    float: left;\n"
+"}\n");
+client.println("\n");
+client.println("li a {\n"
+"    display: block;\n"
+"    color: white;\n"
+"    text-align: center;\n"
+"    padding: 14px 16px;\n"
+"    text-decoration: none;\n"
+"}\n");
+client.println("\n");
+client.println("li a:hover {\n");
+client.println("    background-color: #111;\n");
+client.println("}\n");
+client.println("</style>\n");
+client.println("</head>\n");
+client.println("<body>\n");
+client.println("\n");
+client.println("<ul>\n");
+client.println("  <li><a class=\"active\" href=\"http://ulricsolar.com/\">Home</a></li>\n");
+client.println("  <li><a href=\"#news\">Monitoring System</a></li>\n");
+client.println("  <li><a href=\"#contact\">Clients</a></li>\n");
+client.println("  <li><a class=\"active\" href=\"about.html\">About us</a></li>\n");
+client.println("</ul>\n");
+client.println("\n");
+client.println("\n");
+client.println("<font size=\"+3\">\n");
+client.println("<font color=\"orange\">\n");
+client.println("<font face = \"arial black\">\n");
+client.println("<center>\n");
+client.println("<br>\n");
+client.println("<br>\n");
+client.println("Nambatac Residence\n");
+client.println("<center>");
+client.println("<a href=\"/RELAY=ON\"><button>Turn On</button></a>");
+client.println("<a href=\"/RELAY=OFF\"><button>Turn Off</button></a>");
+client.println("<br>");
+client.println("</center>\n");
+client.println("<center>\n");
+
+if (digitalRead(D8))
+
+      {
+        client.print("<td>Solar Panel System is OFF</td>");
+      }
+      else
+      {
+        client.print("<td>Solar Panel System is ON</td>");
+      }
+
+
+
+
+      client.println("<tr>\n");
+      client.println("</font>\n");
+      client.println("</body>\n");
+      client.println("</html>\n");
+
+
+
+       delay(1);
+Serial.println("Client disconnected");
+Serial.println("");
+
+}
